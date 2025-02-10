@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Dotenv\Exception\ValidationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -13,17 +14,46 @@ class AuthController extends Controller
             $request->validate([
                 "name" => "required",
                 "email" => "required|email|unique:users",
-                "passwors" => "required|confirmed|min3",
+                "password" => "required|confirmed|min:3",
+
             ]);
 
             User::create([
                 "name" => $request->name,
                 "email" => $request->email,
-                "passwors" => Hash::make($request->password),
+                "password" => Hash::make($request->password),
             ]);
             return response()->json(["message" => "new user registered"], 201);
         } catch(\Exception $e) {
-            return response()->json(["message" => "registeration failed", 400]);
+            return response()->json(["message" => "registeration failed"], 400);
         }
+    }
+
+    public function login(Request $request) {
+        try {
+            $request->validate([
+                "email" => "required|email",
+                "password" => "required",
+
+            ]);
+
+            $user = User::where("email", $request->email)->first();
+
+            if(!$user || !Hash::check($request->password, $user->password)) {
+                throw ValidationException::withMessages(["message" => ["email or/and password are incorrect"],
+            ]);
+            }
+
+            $token = $user->createToken("accessToken");
+            return response()->json(["accessToken" => $token->plainTextToken], 200);
+        }catch(\Exception $e) {
+            return response()->json(["message" => $e->getMessage()], 400);
+        }
+    }
+
+    public function logout(Request $request) {
+        $request->user()->tokens()->delete();
+
+        return response()->json(["message" => "logged out"], 200);
     }
 }
