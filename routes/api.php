@@ -16,11 +16,14 @@ route::get('/logout', [AuthController::class, 'logout'])->middleware('auth:sanct
 route::post('/chat', [ChatbotController::class, 'chat']);
 
 route::post('/jsonTest', function (Request $request) {
-    $request->validate([
+    try {
+        $request->validate([
         'jsonData' => 'required|string',
     ]);
 
    dump($request->jsonData);
-   return response()->json(['response' => 'hello other side'], 200);
-
+   return response()->json(['response' => 'hello other side'], 200);    
+    } catch(\Exception $e) {
+        return response()->json(['response' => 'bad request'], 400);
+    }
 });
