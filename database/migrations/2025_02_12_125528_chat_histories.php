@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('chat_history', function (Blueprint $table) {
-            $table->id(); // Primärnyckel (auto-increment)
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // Koppling till users-tabellen
-            $table->foreignId('session_id')->constrained('sessions')->onDelete('cascade'); // Koppling till sessions-tabellen
+        Schema::create('chat_histories', function (Blueprint $table) {
+            $table->id(); 
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->string('session_id', 36);
             $table->string('user_message');
             $table->string('bot_response');
             $table->timestamps();

@@ -13,7 +13,8 @@ route::post('/register', [AuthController::class, 'register']);
 route::post('/login', [AuthController::class, 'login']);
 route::get('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
-route::post('/chat', [ChatbotController::class, 'chat']);
+// route::post('/chat', [ChatbotController::class, 'chat']);
+Route::middleware(['auth:sanctum'])->post('/chat', [ChatbotController::class, 'chat']);
 
 route::post('/jsonTest', function (Request $request) {
     try {
