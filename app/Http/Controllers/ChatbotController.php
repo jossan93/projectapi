@@ -41,7 +41,6 @@ class ChatbotController extends Controller
 
         // Lägg till senaste meddelandet
         $messages = array_merge($previousMessages, [['role' => 'user', 'content' => $request->message]]);
-        \Log::info('Request data sent to Ollama:', ['messages' => $messages]);
 
         // Skicka till LLM
         $responseData = Http::post('http://localhost:11434/api/chat', [
@@ -49,8 +48,6 @@ class ChatbotController extends Controller
             'messages' => $messages,
             'stream' => false
         ]);
-
-        \Log::info('Ollama API FULL Response:', ['response' => $responseData->body()]);
 
         if ($responseData->successful()) {
             // Get the response as an array
@@ -60,12 +57,10 @@ class ChatbotController extends Controller
             if (isset($responseArray['message']['content'])) {
                 $bot_response = $responseArray['message']['content'];
             } else {
-                \Log::error('Content missing from API response', ['response' => $responseArray]);
                 $bot_response = 'Sorry, I encountered an issue.';
             }
         } else {
             // If the API request fails
-            \Log::error('Ollama API call failed', ['response' => $responseData->body()]);
             $bot_response = 'Sorry, I encountered an issue.';
         }
         // Spara i historiken
