@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id(); 
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->string('session_id', 36);
-            $table->string('user_message');
-            $table->string('bot_response');
+            $table->text('user_message');
+            $table->text('bot_response');
             $table->timestamps();
         });
     }
